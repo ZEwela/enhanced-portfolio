@@ -55,6 +55,8 @@ export async function getGitHubProjects() {
           technologies: summary.techStack,
           deployedUrl: summary.deployedUrl,
           githubUrl: repo.html_url,
+          githubId: repo.id,
+          projectId: repo.id.toString(),
         };
         summaryCache[repo.full_name] = result;
         return result;
