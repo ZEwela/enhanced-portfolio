@@ -44,6 +44,7 @@ export default function ProjectCard({
   projectId,
 }: ProjectCardProps) {
   const [supabase] = useState(() => createClient());
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [session, setSession] = useState<Session | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
