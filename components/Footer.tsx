@@ -52,6 +52,22 @@ export default function Footer() {
       const email = prompt("Enter your admin email:");
       if (!email) return;
 
+      // Check if email is in the allowed list
+      const res = await fetch("/api/admin/check-email", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await res.json();
+
+      if (!result.allowed) {
+        alert("Access denied. You're not on the admin list.");
+        return;
+      }
+
       setError(null);
       const { error } = await supabase.auth.signInWithOtp({
         email,
