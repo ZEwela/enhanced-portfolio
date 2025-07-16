@@ -119,12 +119,60 @@ export default function ProjectCard({
     }
   };
 
+  useEffect(() => {
+    if (loading) return;
+
+    const channel = supabase
+      .channel(`realtime:retrospective:${projectId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "project_retrospectives",
+        },
+        (payload) => {
+          console.log("Retrospective updated:", payload);
+          loadRetrospective(); // Refresh data when updated
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [projectId, loading, supabase]);
+
   // Load feedbacks
   useEffect(() => {
     if (!loading) {
       loadFeedbacks();
     }
   }, [projectId, isAdmin, loading]);
+
+  useEffect(() => {
+    if (loading) return;
+
+    const channel = supabase
+      .channel(`realtime:feedback:${projectId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "*", // You can also do INSERT | UPDATE | DELETE
+          schema: "public",
+          table: "project_feedback",
+        },
+        (payload) => {
+          console.log("Realtime change received:", payload);
+          loadFeedbacks(); // Reload feedbacks on any change
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [projectId, loading, supabase]);
 
   const loadFeedbacks = async () => {
     try {
@@ -164,6 +212,8 @@ export default function ProjectCard({
 
       if (data?.retrospective) {
         setRetrospective(data.retrospective);
+      } else {
+        setRetrospective(""); // Clear retrospective if none found
       }
     } catch (error) {
       console.error("Error loading retrospective:", error);
@@ -204,6 +254,27 @@ export default function ProjectCard({
     } catch (error) {
       console.error("Error saving retrospective:", error);
       toast.error("Error saving retrospective");
+    }
+  };
+
+  const handleRetrospectiveDelete = async () => {
+    if (!isAdmin) return;
+
+    if (!confirm("Are you sure you want to delete the retrospective?")) return;
+
+    try {
+      const { error } = await supabase
+        .from("project_retrospectives")
+        .delete()
+        .eq("project_id", projectId);
+
+      if (error) throw error;
+
+      setRetrospective("");
+      toast.success("Retrospective deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting retrospective:", error);
+      toast.error("Failed to delete retrospective");
     }
   };
 
@@ -318,13 +389,21 @@ export default function ProjectCard({
             {retrospectiveError && (
               <p className="text-red-500 text-xs mb-2">{retrospectiveError}</p>
             )}
-            <button
-              onClick={handleRetrospectiveSave}
-              disabled={!!retrospectiveError}
-              className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 disabled:opacity-50"
-            >
-              Save Retrospective
-            </button>
+            <div className="flex gap-2 mt-2">
+              <button
+                onClick={handleRetrospectiveSave}
+                disabled={!!retrospectiveError}
+                className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 disabled:opacity-50"
+              >
+                Save Retrospective
+              </button>
+              <button
+                onClick={handleRetrospectiveDelete}
+                className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700"
+              >
+                Delete Retrospective
+              </button>
+            </div>
           </div>
         ) : (
           <>
