@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
+import toast from "react-hot-toast";
 
 export const projectCardSchema = z.object({
   name: z.string(),
@@ -199,10 +200,10 @@ export default function ProjectCard({
       );
 
       if (error) throw error;
-      alert("Retrospective saved successfully!");
+      toast.success("Retrospective saved successfully!");
     } catch (error) {
       console.error("Error saving retrospective:", error);
-      alert("Error saving retrospective");
+      toast.error("Error saving retrospective");
     }
   };
 
@@ -232,7 +233,7 @@ export default function ProjectCard({
 
       setFeedbackForm({ author: "", email: "", comment: "" });
       setShowFeedbackForm(false);
-      alert(
+      toast.success(
         "Thank you for your feedback! It will be reviewed before being published."
       );
     } catch (error) {

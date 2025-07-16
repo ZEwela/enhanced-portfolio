@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import type { Session } from "@supabase/supabase-js";
+import toast from "react-hot-toast";
 
 export default function Footer() {
   const [supabase] = useState(() => createClient());
@@ -68,7 +69,7 @@ export default function Footer() {
       const result = await res.json();
 
       if (!result.allowed) {
-        alert("Access denied. You're not on the admin list.");
+        toast.error("Access denied. You're not on the admin list.");
         return;
       }
 
@@ -81,7 +82,7 @@ export default function Footer() {
       });
 
       if (error) throw error;
-      alert("Check your email for the login link.");
+      toast.success("Check your email for the login link.");
     } catch (err) {
       let message = "An unknown error occurred";
 
@@ -90,7 +91,7 @@ export default function Footer() {
       }
 
       setError(message);
-      alert(`Error: ${message}`);
+      toast.error(`Error: ${message}`);
     }
   };
 
@@ -99,6 +100,7 @@ export default function Footer() {
       setError(null);
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
+      toast.success("Logged out successfully.");
     } catch (err) {
       let message = "An unknown error occurred";
 
@@ -107,7 +109,7 @@ export default function Footer() {
       }
 
       setError(message);
-      alert(`Error: ${message}`);
+      toast.error(`Error: ${message}`);
     }
   };
 
