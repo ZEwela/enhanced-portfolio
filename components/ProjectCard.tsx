@@ -98,7 +98,7 @@ export default function ProjectCard({
     return () => subscription.unsubscribe();
   }, [supabase]);
 
-  const verifyAdminStatus = async (token) => {
+  const verifyAdminStatus = async (token: string) => {
     try {
       const response = await fetch("/api/admin/verify", {
         headers: {
@@ -236,7 +236,11 @@ export default function ProjectCard({
         "Thank you for your feedback! It will be reviewed before being published."
       );
     } catch (error) {
-      setFeedbackError(error.message);
+      if (error instanceof Error) {
+        setFeedbackError(error.message);
+      } else {
+        setFeedbackError(String(error)); // fallback if it's not an Error
+      }
     } finally {
       setSubmittingFeedback(false);
     }

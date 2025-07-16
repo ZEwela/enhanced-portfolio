@@ -24,7 +24,11 @@ export default function Footer() {
         }
       } catch (err) {
         if (mounted) {
-          setError(err.message);
+          if (err instanceof Error) {
+            setError(err.message);
+          } else {
+            setError("An unknown error occurred");
+          }
           setLoading(false);
         }
       }
@@ -79,8 +83,14 @@ export default function Footer() {
       if (error) throw error;
       alert("Check your email for the login link.");
     } catch (err) {
-      setError(err.message);
-      alert(`Error: ${err.message}`);
+      let message = "An unknown error occurred";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+
+      setError(message);
+      alert(`Error: ${message}`);
     }
   };
 
@@ -90,8 +100,14 @@ export default function Footer() {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
     } catch (err) {
-      setError(err.message);
-      alert(`Error: ${err.message}`);
+      let message = "An unknown error occurred";
+
+      if (err instanceof Error) {
+        message = err.message;
+      }
+
+      setError(message);
+      alert(`Error: ${message}`);
     }
   };
 
