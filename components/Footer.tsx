@@ -116,7 +116,7 @@ export default function Footer() {
   if (loading) {
     return (
       <footer className="w-full py-4 border-t mt-10 flex justify-between px-6 items-center text-sm text-gray-600 bg-gray-50">
-        <p>&copy; {new Date().getFullYear()} Your Site</p>
+        <p>&copy; {new Date().getFullYear()} Ewelina Zawol</p>
         <div>Loading...</div>
       </footer>
     );
@@ -124,7 +124,7 @@ export default function Footer() {
 
   return (
     <footer className="w-full py-4 border-t mt-10 flex justify-between px-6 items-center text-sm text-gray-600 bg-gray-50">
-      <p>&copy; {new Date().getFullYear()} Your Site</p>
+      <p>&copy; {new Date().getFullYear()} Ewelina Zawol</p>
       <div>
         {error && (
           <span className="text-red-500 mr-4 text-xs">Error: {error}</span>
